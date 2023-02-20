@@ -1,6 +1,5 @@
 import requests
 import json
-# from DataBase import DataBase
 
 class ExchangeAPI:
     def __init__(self, sql=False):
@@ -25,13 +24,3 @@ class ExchangeAPI:
     def get_one_exchange_value(self, code):
         url = 'https://api.apilayer.com/exchangerates_data/latest?base=USD&symbols={}'.format(code)
         return json.loads(requests.get(url, headers=self.HEADER).text)
-
-    # def write_exchange_values(self):
-    #     print('Getting values from api.apilayer.com ...')
-    #     exchange_values = self.get_exchange_values()
-    #     print('Complete!')
-    #     if exchange_values:
-    #         ex_dict = json.loads(exchange_values.text)
-    #         _date = ex_dict.get('date')
-    #         for key, value in ex_dict.get('rates').items():
-    #             self.db.update_one(currency=key, value=value, _date=_date)
