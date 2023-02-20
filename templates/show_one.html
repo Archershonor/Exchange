@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Головна
+{% endblock %}
+{% block page_title %}
+    <div class="album py-5 bg-light">
+        <div class="container">
+            Intime Exchange Currency Values from {{base}} to {{cur}}
+        </div>
+    </div>
+{% endblock %}
+        
+{% block body %}
+<div class="album py-5 bg-light">
+    <div class="container">
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 align-items-center" style="place-content: center;">
+                            <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body" style="text-align: center;" >
+                            <p class="card-text">
+                                {{base}} to {{cur}}
+                            </p>
+                            <div class="justify-content-between align-items-center">
+                                <small class="text-muted">{{value}}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

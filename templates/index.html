@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Головна
+{% endblock %}
+{% block page_title %}
+    <div class="album py-5 bg-light">
+        <div class="container">
+            Exchange Currency Values
+        </div>
+    </div>
+{% endblock %}
+        
+{% block body %}
+<div class="album py-5 bg-light">
+    <div class="container">
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            
+            {% for cur in currency_list %}
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body" >
+                            <p class="card-text">
+                                {{cur.code}}
+                            </p>
+                            <div class="justify-content-between align-items-center">
+                                <small class="text-muted">View</small>
+                                <div class="btn-group">
+                                    <a class="btn btn-sm btn-outline-secondary" href="/intime/{{cur.code}}"> Intime Value</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="/currency-{{cur.code}}"> History of Values</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
