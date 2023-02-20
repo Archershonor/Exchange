@@ -2,11 +2,13 @@ from flask import Flask, request, flash, url_for, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from Parser import ExchangeAPI
+from flask_crontab import Crontab
 
 app = Flask (__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://odoo:odoo@localhost/exchange'
 db = SQLAlchemy(app)
 Parser = ExchangeAPI()
+crontab = Crontab(app)
 
 class currency(db.Model):
     __tablename__ = 'currency'
@@ -57,6 +59,10 @@ def show_one_intime(code):
         cur=code
         value="{} is not a code of currency".format(cur)
     return render_template('show_one.html', base=base, cur=cur, value=value )
+
+@crontab.job(minute="1", hour="0")
+def planning_updator():
+    print('crontab running ...')
 
 def parce_now():
     ex_dict = Parser.get_exchange_values()
