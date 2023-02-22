@@ -1,12 +1,17 @@
 from flask import Flask, request, flash, url_for, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+
 from datetime import datetime
 from Parser import ExchangeAPI
 from flask_crontab import Crontab
 
+
+
 app = Flask (__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://odoo:odoo@localhost/exchange'
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 Parser = ExchangeAPI()
 crontab = Crontab(app)
 
@@ -20,12 +25,35 @@ class currency(db.Model):
     def __repr__(self):
         return f"<{self.code}>"
 
+
 class values(db.Model):
     __tablename__ = 'values'
     id = db.Column(db.Integer, primary_key = True)
     value = db.Column(db.Float, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     currency_id = db.Column(db.Integer, db.ForeignKey('currency.id'))
+
+
+class currencySchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = currency
+        include_relationship = True
+        load_instance = True
+    
+    id   = ma.auto_field()
+    name = ma.auto_field()
+    code = ma.auto_field()
+    currency_value_ids = ma.List(ma.HyperlinkRelated("values"))
+    # currency_value_ids = ma.auto_field() 
+    # in current last version of marshmallow_sqlalchemy 
+    # SQLAlchemyAutoSchema can`t work with relationship fields
+    # But we can use SQLAlchemySchema with list of HyperlinkRelated
+
+class valuesSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = values
+        include_relationship = True
+        load_instance = True
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -50,6 +78,8 @@ def show_one(code):
 @app.route('/intime/<code>', methods = ['GET', 'POST'])
 def show_one_intime(code):
     exch = Parser.get_one_exchange_value(code)
+    vat = currencySchema(exch)
+    print(vat)
     if exch.get('rates'):
         base=exch.get('base')
         for key,val in exch.get('rates').items():
@@ -60,9 +90,13 @@ def show_one_intime(code):
         value="{} is not a code of currency".format(cur)
     return render_template('show_one.html', base=base, cur=cur, value=value )
 
+
+@app.cli.command
 @crontab.job(minute="1", hour="0")
 def planning_updator():
     print('crontab running ...')
+    app.logger.info('crontab running ...')
+
 
 def parce_now():
     ex_dict = Parser.get_exchange_values()
@@ -90,4 +124,5 @@ def parce_now():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        app.cli.add_command(planning_updator, 'planning_updator')
     app.run(debug = True)

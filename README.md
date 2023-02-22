@@ -2,7 +2,7 @@
 This is a simple app to get a curremcy exchange values (USD,UAH,PLN,EUR,CAD) to USD
 
 ## Requirements:
-Python 3.6.9+, Flask 2.x, SqlAlchemy , PostgreSQL, flask-crontab, flask_sqlalchemy, requests, json
+Python 3.6.9+, Flask 2.x, SqlAlchemy , PostgreSQL, Marshmallow, flask-crontab, flask_sqlalchemy, flask_marshmallow, requests, json
 
 ## Usage
 start application with <code> python3 Exchange.py </code>
