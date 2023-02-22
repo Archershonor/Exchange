@@ -43,7 +43,7 @@ class currencySchema(ma.SQLAlchemySchema):
     id   = ma.auto_field()
     name = ma.auto_field()
     code = ma.auto_field()
-    currency_value_ids = ma.List(ma.HyperlinkRelated("values"))
+    currency_value_ids = ma.List(ma.HyperlinkRelated("show_all"))
     # currency_value_ids = ma.auto_field() 
     # in current last version of marshmallow_sqlalchemy 
     # SQLAlchemyAutoSchema can`t work with relationship fields
@@ -65,7 +65,13 @@ def show_all():
         #         currency_list=currency.query.like(code = request.form.get('search')))
     elif request.form.get('get_values'):
         parce_now()
-    return render_template('index.html', currency_list = currency.query.all() )
+
+    schema =  currencySchema()
+    exch = db.session.scalars(db.select(currency)).all() # Example of marshmallow deserialize
+    currency_list = schema.dump(exch, many=True)
+    print(currency_list)
+    return render_template('index.html', currency_list = currency_list )
+    # return render_template('index.html', currency_list = currency.query.all() ) # Varriant without marshmallow
 
 
 @app.route('/currency-<code>', methods = ['GET', 'POST'])
@@ -78,8 +84,6 @@ def show_one(code):
 @app.route('/intime/<code>', methods = ['GET', 'POST'])
 def show_one_intime(code):
     exch = Parser.get_one_exchange_value(code)
-    vat = currencySchema(exch)
-    print(vat)
     if exch.get('rates'):
         base=exch.get('base')
         for key,val in exch.get('rates').items():
