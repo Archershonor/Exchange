@@ -1,0 +1,9 @@
+Flask==2.0.3
+flask-crontab==0.1.2
+flask-marshmallow==0.14.0
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.46
+marshmallow==3.14.1
+requests==2.27.1
+marshmallow-sqlalchemy
+psycopg2-binary
